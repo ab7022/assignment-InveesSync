@@ -9,6 +9,8 @@ import { getItems } from "./api";
 
 function App() {
   const [response, setResponse] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+
   const [items, setItems] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -34,6 +36,8 @@ function App() {
     const selectedItemData = items.find(
       (item) => item.value == event.target.value
     );
+    setSelectedItems([selectedItemData]);
+
     setSelectedItem(selectedItemData);
     setDestinations(selectedItemData?.allowedLocations || []);
     setUnit(selectedItemData?.unit || "");
@@ -112,6 +116,7 @@ function App() {
                 id="dest"
                 className="w-full p-2 border rounded-md bg-blue-50 focus:border-blue-500"
               >
+                <option value="" className="text-gray-400">List of available destinations</option>
                 {destinations &&
                   destinations.map((destination) => (
                     <option key={destination} value={destination}>
@@ -126,7 +131,7 @@ function App() {
                 className="bg-blue-200 text-black block text-white p-2 rounded-xl w-full text-semibold"
                 onClick={openCamera}
               >
-                Open Camera
+                Scan Destination Location
               </button>
               <QrCodeScanner
                 onScan={handleScan}
@@ -135,8 +140,10 @@ function App() {
               />
             </div>
 
-            <SubmitButton isDestinationMatched={isDestinationMatched} />
-          </div>
+            <SubmitButton
+            isDestinationMatched={isDestinationMatched}
+            selectedItem={selectedItems}
+          />          </div>
         </div>
       </div>
     </div>

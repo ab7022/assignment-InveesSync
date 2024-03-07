@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css"; 
 import axios from "axios";
+import numberToWords from 'number-to-words';
 
 function App() {
   const [response, setResponse] = useState([]);
@@ -8,6 +9,8 @@ function App() {
   const [destinations, setDestinations] = useState([]);
   const [selectedItem, setSelectedItem] = useState("");
   const [unit, setUnit] = useState("");
+  const [quantity, setQuantity] = useState(0);
+
 
   useEffect(() => {
     axios
@@ -32,7 +35,16 @@ function App() {
     setDestinations(selectedItemData?.allowed_locations || []);
     setUnit(selectedItemData?.unit || "");
   };
+  const getQuantityMessage = () => {
+    const quantityNumber = parseInt(quantity, 10);
+    if (isNaN(quantityNumber) || quantityNumber===0) {
+      return ""
+    }
+      const quantityWords = numberToWords.toWords(quantityNumber);
+      return `${quantityWords}`;
+    
 
+  };
   return (
     <div className="flex items-center justify-center h-screen bg-blue-50">
       <div>
@@ -66,8 +78,14 @@ function App() {
                 type="number"
                 id="quantity"
                 placeholder="Enter quantity"
+                onChange={(e)=>{
+                  setQuantity(e.target.value)
+                }}
                 className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"
               />
+                {getQuantityMessage() && (
+              <p className="text-green-500 mt-2">{getQuantityMessage()}</p>
+            )}
             </div>
             <div className="">
               <label
@@ -84,6 +102,8 @@ function App() {
                 value={unit}
                 readOnly
               />
+             
+
             </div>
             <div className="">
               <label

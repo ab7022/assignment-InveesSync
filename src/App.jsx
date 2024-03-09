@@ -32,31 +32,45 @@ function App() {
     fetchItems();
   }, []);
 
-  const handleItemChange = (event) => {
-    const selectedItemData = items.find(
-      (item) => item.value == event.target.value
-    );
+  const handleItemChange = (event, scannedLocation) => {
+    const selectedItemId = event.target.value;
+    const selectedItemData = items.find((item) => item.value == selectedItemId);
+  
+    // Update the selected item with the scanned location
+    selectedItemData.allowed_Locations = [scannedLocation];
+  
     setSelectedItems([selectedItemData]);
-
     setSelectedItem(selectedItemData);
     setDestinations(selectedItemData?.allowedLocations || []);
     setUnit(selectedItemData?.unit || "");
-    setIsDestinationMatched(false);
   };
+  
 
   const handleScan = (data) => {
     if (data) {
-      const isLocationAllowed = destinations.includes(data.text);
-      if (isLocationAllowed) {
-        console.log("destination is allowed. Success!");
-        setIsCameraOpen(false);
-        setIsDestinationMatched(true);
-      } else {
-        console.log("destination is not allowed. Failed!");
-        setIsDestinationMatched(false);
-      }
+      console.log("Scanned Data:", data.text);
+      const scannedLocation = data.text;
+      const isLocationAllowed = destinations.includes(scannedLocation);
+  
+      // Use the state updater function to ensure you have the latest state
+      setIsCameraOpen((prevIsCameraOpen) => {
+        if (isLocationAllowed) {
+          console.log("Destination is allowed. Success!");
+          setIsDestinationMatched(true);
+          setIsCameraOpen(false)
+          handleItemChange({ target: { value: selectedItem?.value } }, scannedLocation);
+        } else {
+          console.log("Destination is not allowed. Failed!");
+          setIsDestinationMatched(false);
+        }
+  
+        return prevIsCameraOpen;
+      });
     }
   };
+  
+  
+  
 
   const handleError = (error) => {
     console.error(error);
@@ -116,7 +130,9 @@ function App() {
                 id="dest"
                 className="w-full p-2 border rounded-md bg-blue-50 focus:border-blue-500"
               >
-                <option value="" className="text-gray-400">List of available destinations</option>
+                <option value="" className="text-gray-400">
+                  List of available destinations
+                </option>
                 {destinations &&
                   destinations.map((destination) => (
                     <option key={destination} value={destination}>
@@ -141,9 +157,11 @@ function App() {
             </div>
 
             <SubmitButton
-            isDestinationMatched={isDestinationMatched}
-            selectedItem={selectedItems}
-          />          </div>
+              isDestinationMatched={isDestinationMatched}
+              selectedItem={selectedItems}
+              quantity={quantity}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ const ItemSelection = ({ items, handleItemChange }) => (
     >
       <option value="">Choose an Item</option>
       {items.map((item) => (
-        <option key={item.value} value={item.value}>
+        <option key={item.value} value={item.value} data-location={item.allowedLocations}>
           {item.label}
         </option>
       ))}

@@ -2,28 +2,40 @@
 import React from "react";
 import axios from "axios";
 
-const SubmitButton = ({ isDestinationMatched, selectedItem }) => {
+const SubmitButton = ({ isDestinationMatched, selectedItem, quantity }) => {
   const handleSubmit = async () => {
     try {
-      // Prepare the data to be sent in the POST request
-      const postData = selectedItem.map((item) => ({
-        id: item.value,
-        item_name: item.label,
-        location: item.location, // Assuming the location is part of the selected item data
-      }));
-
-      // Send the POST request to the server
-      const response = await axios.post(
-        "https://api-staging.inveesync.in/test/submit",
-        postData
-      );
-
-      // Handle the response from the server as needed
-      console.log("POST request successful:", response.data);
+      // Check if destination is matched and at least one item is selected
+      if (isDestinationMatched && selectedItem.length > 0) {
+        const selectedItemId = selectedItem[0].value;
+        const itemName = selectedItem[0].label;
+        console.log("Selected Item:", selectedItem);
+        const scannedDestination = document.getElementById("dest").value;
+        console.log("Scanned Destination:", scannedDestination);  
+        // Prepare data to be submitted
+        const dataToSubmit = {
+          id: selectedItemId,
+          itemName: itemName,
+          scannedDestination: scannedDestination,
+          quantity: quantity,
+          // Add other data you want to submit
+        };
+  
+        // Make a POST request to the server
+        const response = await axios.post(
+          "https://api-staging.inveesync.in/test/submit",
+          dataToSubmit
+        );
+  
+        // Handle the server response as needed
+        console.log("Server response:", response.data);
+      } else {
+        console.log("Destination not matched or no item selected");
+      }
     } catch (error) {
       console.error("Error submitting data:", error);
     }
-  };
+  }
 
   return (
     <div className="w-full">

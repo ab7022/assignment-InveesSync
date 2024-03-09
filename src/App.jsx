@@ -35,10 +35,10 @@ function App() {
   const handleItemChange = (event, scannedLocation) => {
     const selectedItemId = event.target.value;
     const selectedItemData = items.find((item) => item.value == selectedItemId);
-  
+
     // Update the selected item with the scanned location
     selectedItemData.allowed_Locations = [scannedLocation];
-  
+
     setSelectedItems([selectedItemData]);
     setSelectedItem(selectedItemData);
     setDestinations(selectedItemData?.allowedLocations || []);
@@ -51,26 +51,26 @@ function App() {
       console.log("Scanned Data:", data.text);
       const scannedLocation = data.text;
       const isLocationAllowed = destinations.includes(scannedLocation);
-  
+      console.log(scannedLocation);
       // Use the state updater function to ensure you have the latest state
       setIsCameraOpen((prevIsCameraOpen) => {
         if (isLocationAllowed) {
           console.log("Destination is allowed. Success!");
           setIsDestinationMatched(true);
-          setIsCameraOpen(false)
-          handleItemChange({ target: { value: selectedItem?.value } }, scannedLocation);
+          setIsCameraOpen(false);
+          handleItemChange(
+            { target: { value: selectedItem?.value } },
+            scannedLocation
+          );
         } else {
           console.log("Destination is not allowed. Failed!");
           setIsDestinationMatched(false);
         }
-  
+
         return prevIsCameraOpen;
       });
     }
   };
-  
-  
-  
 
   const handleError = (error) => {
     console.error(error);
@@ -149,11 +149,14 @@ function App() {
               >
                 Scan Destination Location
               </button>
-              <QrCodeScanner
-                onScan={handleScan}
-                onError={handleError}
-                isCameraOpen={isCameraOpen}
-              />
+              {isCameraOpen && (
+                <QrCodeScanner
+                  onScan={handleScan}
+                  onError={handleError}
+                  isCameraOpen={isCameraOpen}
+                  facingMode="environment" // Specify the facing mode as needed
+                />
+              )}
             </div>
 
             <SubmitButton

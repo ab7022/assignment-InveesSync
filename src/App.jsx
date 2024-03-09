@@ -44,7 +44,7 @@ function App() {
     setDestinations(selectedItemData?.allowedLocations || []);
     setUnit(selectedItemData?.unit || "");
   };
-  
+  //test
 
   const handleScan = (data) => {
     if (data) {
